@@ -1,5 +1,7 @@
 package com.prmto.diaryapp.navigation
 
+import android.annotation.SuppressLint
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -7,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.prmto.diaryapp.presantation.screens.auth.AuthenticationScreen
 import com.prmto.diaryapp.util.Constants
 import com.prmto.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 
@@ -20,9 +23,15 @@ fun SetupNavGraph(startDestinationScreen:Screen, navController: NavHostControlle
     }
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 fun NavGraphBuilder.authenticationRoute(){
     composable(Screen.Authentication.route){
+        AuthenticationScreen(
+            loadingState = false,
+            onButtonClicked = {
 
+            }
+        )
     }
 }
 
