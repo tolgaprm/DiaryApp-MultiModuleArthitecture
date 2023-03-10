@@ -18,6 +18,11 @@ android {
         versionCode 1
         versionName "1.0"
 
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+        buildConfigField "String", "CLIENT_ID", "\"${properties.getProperty("CLIENT_ID")}\""
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
