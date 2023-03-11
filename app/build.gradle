@@ -21,7 +21,7 @@ android {
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
-        buildConfigField "String", "CLIENT_ID", "\"${properties.getProperty("CLIENT_ID")}\""
+        buildConfigField "String", "CLIENTID", "\"${properties.getProperty("CLIENTID")}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

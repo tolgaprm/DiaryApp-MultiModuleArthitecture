@@ -21,7 +21,9 @@ fun AuthenticationScreen(
     loadingState: Boolean,
     oneTapSignInState: OneTapSignInState,
     messageBarState: MessageBarState,
-    onButtonClicked: () -> Unit
+    onButtonClicked: () -> Unit,
+    onTokenIdReceived:(String)->Unit,
+    onDialogDismissed:(String)->Unit
 ) {
     Scaffold(
         content = {
@@ -38,11 +40,9 @@ fun AuthenticationScreen(
         state = oneTapSignInState,
         clientId = CLIENT_ID,
         onTokenIdReceived = {tokenId->
-            Log.d("auth",tokenId)
-            messageBarState.addSuccess("Successfully authenticated")
+            onTokenIdReceived(tokenId)
         },
         onDialogDismissed = {message->
-            Log.d("auth",message)
-            messageBarState.addError(Exception(message))
+            onDialogDismissed(message)
         })
 }
