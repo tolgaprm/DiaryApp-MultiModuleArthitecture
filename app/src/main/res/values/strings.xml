@@ -3,4 +3,10 @@
     <string name="auth_title">Welcome back</string>
     <string name="auth_subtitle">Please sign in to continue</string>
     <string name="successfully_authenticated">Successfully Authenticated</string>
+    <string name="logo_image">Logo Image</string>
+    <string name="google_logo">Google Logo</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="alert_sign_out">Are you sure you want to Sign Out from your Google Account?</string>
 </resources>

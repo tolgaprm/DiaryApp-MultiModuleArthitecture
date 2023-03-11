@@ -2,18 +2,13 @@ package com.prmto.diaryapp.navigation
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -22,8 +17,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.prmto.diaryapp.R
+import com.prmto.diaryapp.presantation.components.DisplayAlertDialog
 import com.prmto.diaryapp.presantation.screens.auth.AuthenticationScreen
 import com.prmto.diaryapp.presantation.screens.auth.AuthenticationViewModel
+import com.prmto.diaryapp.presantation.screens.home.HomeScreen
 import com.prmto.diaryapp.util.Constants.APP_ID
 import com.prmto.diaryapp.util.Constants.WRITE_SCREEN_ARGUMENT_KEY
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -31,6 +28,7 @@ import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SetupNavGraph(startDestinationScreen: Screen, navController: NavHostController) {
@@ -46,7 +44,15 @@ fun SetupNavGraph(startDestinationScreen: Screen, navController: NavHostControll
             }
         )
 
-        homeRoute()
+        homeRoute(
+            onNavigateToWrite = {
+                navController.navigate(Screen.Write.route)
+            },
+            onNavigateToAuth = {
+                navController.popBackStack()
+                navController.navigate(Screen.Authentication.route)
+            }
+        )
         writeRoute()
     }
 }
@@ -89,28 +95,51 @@ fun NavGraphBuilder.authenticationRoute(
                 messageBarState.addError(Exception(message))
                 viewModel.setLoading(false)
             },
-            onNavigateToHome =  onNavigateHome
+            onNavigateToHome = onNavigateHome
         )
     }
 }
 
-fun NavGraphBuilder.homeRoute() {
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.homeRoute(
+    onNavigateToWrite: () -> Unit,
+    onNavigateToAuth: () -> Unit,
+) {
     composable(Screen.Home.route) {
         val scope = rememberCoroutineScope()
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            Button(onClick = {
-                scope.launch(Dispatchers.IO){
-                    App.create(APP_ID).currentUser?.logOut()
+        val signOutDialogOpened = remember { mutableStateOf(false) }
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        HomeScreen(
+            drawerState = drawerState,
+            onNavigateToWrite = onNavigateToWrite,
+            onMenuClicked = {
+                scope.launch {
+                    drawerState.open()
                 }
-            }) {
-                Text(text = "Logout")
+            },
+            onSignOutClick = {
+                signOutDialogOpened.value = true
             }
-        }
+        )
+
+
+        DisplayAlertDialog(
+            title = stringResource(id = R.string.sign_out),
+            message = stringResource(id = R.string.alert_sign_out),
+            dialogOpened = signOutDialogOpened.value,
+            onDialogClosed = { signOutDialogOpened.value = false },
+            onYesClicked = {
+                scope.launch(Dispatchers.IO) {
+                    val user = App.create(APP_ID).currentUser
+                    if (user != null) {
+                        user.logOut()
+                        withContext(Dispatchers.Main){
+                            onNavigateToAuth()
+                        }
+                    }
+                }
+            }
+        )
     }
 }
 
