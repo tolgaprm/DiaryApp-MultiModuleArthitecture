@@ -2,13 +2,17 @@ package com.prmto.diaryapp.navigation
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -72,9 +76,7 @@ fun NavGraphBuilder.authenticationRoute(
                 viewModel.signInWithMongoAtlas(
                     tokenId = tokenId,
                     onSuccess = {
-                        if (it) {
-                            messageBarState.addSuccess(context.getString(R.string.successfully_authenticated))
-                        }
+                        messageBarState.addSuccess(context.getString(R.string.successfully_authenticated))
                         viewModel.setLoading(false)
                     },
                     onError = {
@@ -97,7 +99,9 @@ fun NavGraphBuilder.homeRoute() {
         val scope = rememberCoroutineScope()
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Button(onClick = {
                 scope.launch(Dispatchers.IO){
